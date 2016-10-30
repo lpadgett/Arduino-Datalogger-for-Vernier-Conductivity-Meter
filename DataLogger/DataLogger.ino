@@ -14,17 +14,35 @@
  * in the header(s) of a file, such as the Adafruit_ADS1015.h file.
  */
 
-//The Wire.h library allows communication with I2C / TWI devices.
+//The Wire library allows communication with I2C / TWI devices.
 #include <Wire.h>
 
+//The ADS1015 library facilitates reading from the ADS1115.
 #include <Adafruit_ADS1015.h>
 
-void setup() {
-  // put your setup code here, to run once:
+//The LiquidCrystal library (by Juan Hernandez, aka juanh0238) facilitates usage of the 
+//LCD screen using a shift register via SPI.
+#include <LiquidCrystal.h>
 
+//The SPI library enables SPI interface bus.
+#include <SPI.h>
+
+float cVoltage = 0.0; //Conductivity meter voltage
+
+LiquidCrystal lcd(2);
+
+void setup() {
+  Serial.begin(9600); //Sets baud rate
+  lcd.begin(16,2); //Initializes LCD with # of rows and columns
+//  ads.begin(); //Initializes ADC
+  lcd.print("Hello, world!");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
+  // set the cursor to column 0, line 1
+  // (note: line 1 is the second row, since counting begins with 0):
+  lcd.setCursor(0, 1);
+  // print the number of seconds since reset:
+  lcd.print(millis()/1000);
+  lcd.print("Hello, world!");
 }
