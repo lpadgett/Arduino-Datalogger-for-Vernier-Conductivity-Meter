@@ -30,4 +30,5 @@ headers in those files. I do not wish to place cumbersome restrictions on the co
 since I have found many pieces of code that I would like to use in potentially profitable ideas
 or schoolwork before, only to find that the code was licensed or copyrighted in some form and I
 couldn't use it without going through a painstaking process of releasing everything to the public
-or paying royalties to the writer. So, I just used a very loose BSD license. See license.txt for more information.
+or paying royalties to the writer. So, I used the MIT software license, which is very liberal in
+its terms.
