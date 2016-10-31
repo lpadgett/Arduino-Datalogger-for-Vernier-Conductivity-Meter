@@ -16,9 +16,7 @@
     v1.0  - First release
     v1.1  - Added ADS1115 support - W. Earl
 */
-/**************************************************************************/
-
-/*
+/**************************************************************************
  * Software License Agreement (BSD License)
 
 Copyright (c) 2012, Adafruit Industries
@@ -46,6 +44,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
 #if ARDUINO >= 100
  #include "Arduino.h"
 #else
@@ -176,5 +175,4 @@ class Adafruit_ADS1115 : public Adafruit_ADS1015
 
  private:
 };
-0
 
