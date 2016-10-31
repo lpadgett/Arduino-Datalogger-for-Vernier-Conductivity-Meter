@@ -14,6 +14,17 @@
  * in the header(s) of a file, such as the Adafruit_ADS1015.h file.
  */
 
+ /*
+  * Pin specifications:
+  * SS for LCD: 2
+  * SS for SD Card Reader/Writer ("R/W"): 10
+  * MOSI Pin: 11
+  * MISO Pin: 12
+  * Clock Pin: 13
+  * SDA and SCL are used for the ADS1115.
+  * Peristaltic Pump (PP) Pin: 5. Note: PWN is required for speed adjustment.
+  */
+
 //The Wire library allows communication with I2C / TWI devices.
 #include <Wire.h>
 
@@ -27,11 +38,29 @@
 //The SPI library enables SPI interface bus.
 #include <SPI.h>
 
+//Set pins for MISO/MOSI/SS/PP
+const int lcdSS = 2; //SS for LCD
+const int sdSS = 10; //SS for SD card R/W
+const int MOSI = 11; //MOSI pin
+const int MISO = 12; //MISO pin
+const int clk = 13; //Clock pin
+const int PP = 5; //Peristaltic pump pin
+
+
 float cVoltage = 0.0; //Conductivity meter voltage
 
 LiquidCrystal lcd(2);
 
 void setup() {
+  //Set pin modes
+  pinMode(lcdSS, OUTPUT);
+  pinMode(sdSS, OUTPUT);
+  pinMode(MOSI, OUTPUT);
+  pinMode(MISO, OUTPUT);
+  pinMode(clk, OUTPUT);
+  pinMode(PP, OUTPUT);
+
+  //Initialize communication processes
   Serial.begin(9600); //Sets baud rate
   lcd.begin(16,2); //Initializes LCD with # of rows and columns
 //  ads.begin(); //Initializes ADC
