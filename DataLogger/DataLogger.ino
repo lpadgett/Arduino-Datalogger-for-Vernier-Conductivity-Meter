@@ -41,8 +41,8 @@
 //Set pins for MISO/MOSI/SS/PP
 const int lcdSS = 2; //SS for LCD
 const int sdSS = 10; //SS for SD card R/W
-const int MOSI = 11; //MOSI pin
-const int MISO = 12; //MISO pin
+const int MOSIpin = 11; //MOSI pin
+const int MISOpin = 12; //MISO pin
 const int clk = 13; //Clock pin
 const int PP = 5; //Peristaltic pump pin
 
@@ -55,8 +55,8 @@ void setup() {
   //Set pin modes
   pinMode(lcdSS, OUTPUT);
   pinMode(sdSS, OUTPUT);
-  pinMode(MOSI, OUTPUT);
-  pinMode(MISO, OUTPUT);
+  pinMode(MOSIpin, OUTPUT);
+  pinMode(MISOpin, OUTPUT);
   pinMode(clk, OUTPUT);
   pinMode(PP, OUTPUT);
 
@@ -71,7 +71,5 @@ void loop() {
   // set the cursor to column 0, line 1
   // (note: line 1 is the second row, since counting begins with 0):
   lcd.setCursor(0, 1);
-  // print the number of seconds since reset:
-  lcd.print(millis()/1000);
-  lcd.print("Hello, world!");
+  lcd.print("Test");
 }
