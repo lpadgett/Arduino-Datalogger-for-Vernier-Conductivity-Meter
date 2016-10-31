@@ -26,12 +26,12 @@
   */
 
 //The Wire library allows communication with I2C / TWI devices.
-#include <Wire.h>
+#include <Wire.h> //V1.0
 
 //The ADS1015 library facilitates reading from the ADS1115.
-#include <Adafruit_ADS1015.h>
+#include <Adafruit_ADS1015.h> //V1.1
 
-//The LiquidCrystal library (by Juan Hernandez, aka juanh0238) facilitates usage of the 
+//The LiquidCrystal library, by Juan Hernandez (juanh0238) facilitates usage of the 
 //LCD screen using a shift register via SPI.
 #include <LiquidCrystal.h>
 
@@ -40,16 +40,18 @@
 
 //Set pins for MISO/MOSI/SS/PP
 const int lcdSS = 2; //SS for LCD
+LiquidCrystal lcd(2);
 const int sdSS = 10; //SS for SD card R/W
 const int MOSIpin = 11; //MOSI pin
 const int MISOpin = 12; //MISO pin
 const int clk = 13; //Clock pin
 const int PP = 5; //Peristaltic pump pin
 
+Adafruit_ADS1115 ads1115;
+Adafruit_ADS1115 ads(0x48); //Sets base address
 
-float cVoltage = 0.0; //Conductivity meter voltage
-
-LiquidCrystal lcd(2);
+int16_t cVoltage; //16 bit variable reading from ADC's A0
+String result; //String containing data from ADC
 
 void setup() {
   //Set pin modes
@@ -63,13 +65,31 @@ void setup() {
   //Initialize communication processes
   Serial.begin(9600); //Sets baud rate
   lcd.begin(16,2); //Initializes LCD with # of rows and columns
-//  ads.begin(); //Initializes ADC
-  lcd.print("Hello, world!");
+  ads1115.begin(); //Initializes ADC
+  lcd.print(""); //Print nothing to LCD to calibrate
 }
 
 void loop() {
-  // set the cursor to column 0, line 1
-  // (note: line 1 is the second row, since counting begins with 0):
-  lcd.setCursor(0, 1);
-  lcd.print("Test");
+  writeResult();
 }
+
+void LCDwrite(String s, String s2){
+  lcd.setCursor(0, 0);
+  lcd.print(s);
+  lcd.setCursor(0,1);
+  lcd.print(s2 + " mV");
+}
+
+void readADS() {
+  cVoltage = ads1115.readADC_Differential_0_1();
+  result = cVoltage;
+}
+
+void writeResult(){
+  readADS();
+  delay(500);
+  LCDwrite("Hello", result);
+}
+
+
+
