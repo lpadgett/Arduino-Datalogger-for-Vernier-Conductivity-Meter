@@ -49,7 +49,7 @@ SdFat SD; //Added for backwards compatability. This was suggested on the Arduino
 //Set pins for MISO/MOSI/SS/PP
 const int lcdSS = 2; //SS for LCD
 const int sdSS = 10; //SS for sd card logger was already defined, but
-//pin 10 (the hardware SS pin) must be set to output or the SD library
+//pin 10 (the hardware SS pin) must be set to output or the SdFat library
 //won't work
 const int MOSIpin = 11; //MOSI pin
 const int MISOpin = 12; //MISO pin
