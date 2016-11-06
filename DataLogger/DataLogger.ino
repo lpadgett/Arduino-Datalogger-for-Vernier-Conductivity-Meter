@@ -40,13 +40,17 @@
 
 //#include <SD.h>
 //Instead, use the SdFat library by greiman (https://github.com/greiman/SdFat)
-#include <SdFat.h>
+#include "SdFat.h"
 SdFat SD; //Added for backwards compatability. This was suggested on the Arduino forum
 //by user Scottrockcafe to user trilbytim (https://forum.arduino.cc/index.php?topic=231495.0).
 
+#define SD_CS_PIN SS //Defines CS pin as SS
+
 //Set pins for MISO/MOSI/SS/PP
 const int lcdSS = 2; //SS for LCD
-const int sdSS = 10; //Slave select for SD card R/W
+const int sdSS = 10; //SS for sd card logger was already defined, but
+//pin 10 (the hardware SS pin) must be set to output or the SD library
+//won't work
 const int MOSIpin = 11; //MOSI pin
 const int MISOpin = 12; //MISO pin
 const int clk = 13; //Clock pin
@@ -73,28 +77,18 @@ void setup() {
   pinMode(MISOpin, OUTPUT);
   pinMode(clk, OUTPUT);
   pinMode(PP, OUTPUT);
-
-  //Initialize communication processes
-  Serial.begin(9600); //Sets baud rate
   
   lcd.begin(16,2); //Initializes LCD with # of rows and columns
 
-  //Initialize SD card
-  LCDwrite("Initializing", "SD Card");
-  if(!SD.begin(sdSS)){ //If the SD card can't be initialized
-  LCDwrite("Card failed ", "Fix problem"); 
-  while (1); //Freeze everything until it can be
+  if (!SD.begin(SD_CS_PIN)) {
+    LCDwrite("Failed to Detect", "SD Card");
+    while(1);
   }
   LCDwrite("SD Card", "Initialized");
-  resultFile = SD.open(fileName, FILE_WRITE); //Open file that will be written to
-  if(! resultFile){
-  LCDwrite("Error opening", fileName + "    "); //If the file can't be opened
-  while(1); //Freeze everything until it can be
-  }
 
   //Finish initialization processes
   ads1115.begin(); //Initializes ADC
-  LCDwrite("",""); //Print nothing to LCD to reset it
+  LCDclear();
 }
 
 void loop() {
@@ -109,6 +103,10 @@ void LCDwrite(String s, String s2){
   lcd.setCursor(0,1);
   lcd.print(s2);
 }
+
+void LCDclear(){
+  LCDwrite("","");
+  }
 
 void readADS() {
   cVoltage = ((ads1115.readADC_Differential_0_1())*0.1875);
@@ -127,8 +125,13 @@ void readADS() {
 }
 
 void SDwrite() {
+  resultFile = SD.open(fileName, FILE_WRITE);
+  if(!resultFile){
+    LCDwrite("Cannot open", fileName);
+    delay(1000);
+    LCDclear();
+    }
   digitalWrite(lcdSS, LOW); //Sets LCD SS pin to low
-  digitalWrite(sdSS, HIGH); //Sets SD SS pin to high
   resultFile.println(resultmV + ","); //writes to SD card
 }
 
