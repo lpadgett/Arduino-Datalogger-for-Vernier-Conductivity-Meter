@@ -30,9 +30,12 @@
 Adafruit_ADS1115 ads1115; //Creates instance of ads1115
 Adafruit_ADS1115 ads(0x48); //Sets base address
 //Create variables for displaying on LCD and saving to SD Card
-float cVoltage; //16 bit variable reading from ADC's A0
+float cVoltage; //Variable reading from ADC's A0
 String resultmV; //String containing reading from ADC in mV
-String resultV; //String containing reading from ADC in V
+String resultS; //String variable containing result in microsiemens.
+//Note: Voltage in mV for 1000uS/cm conductivity is mV.
+//CALIBRATE USING THAT VOLTAGE. Ensure the Vernier conductivity meter's range is
+//set to 0 to 20,000 uS/cm (0 to 10,000 mg/L TDS).
 
 
 //The LiquidCrystal library facilitates usage of the  LCD screen
@@ -59,6 +62,7 @@ const int MOSIpin = 11; //MOSI pin
 const int MISOpin = 12; //MISO pin
 const int clk = 13; //Clock pin
 const int PP = 3; //Peristaltic pump pin
+const int pumpSpeed = 200; //Peristaltic pump speed (adjusted via PWM)
 
 void setup() {
   //Set pin modes
@@ -82,6 +86,8 @@ void setup() {
   } else{
     LCDwrite("Error writing to", fileName);
     }
+//    analogWrite(PP, pumpSpeed); //Sets speed of peristaltic pump to a constant value
+//    delay(100);
 }
 
 /*
