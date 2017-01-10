@@ -38,6 +38,7 @@ const String timeText = "ms"; //Change as needed
 double cVoltage; //Variable reading from ADC's A0
 String resultmV; //String containing reading from ADC in mV
 String resultS; //String variable containing result in microsiemens.
+double resultSd; //Double variable for deciding if measurement is not error
 const double intercept = 0; //Intercept for conductivity meter, provided by Vernier*
 const double slope = 0.357142857; //Slope for conductivity meter, provided by Vernier*
 //*THE INTERCEPT AND SLOPE ARE NOT YET CORRECT, STILL WAITING ON A RESPONSE
@@ -132,16 +133,17 @@ void setup() {
 void loop() {
   writeResult();
   int ms = millis();
-  if (ms % mlSpeed40 == 0) { 
+  if (ms / mlSpeed40 <= 1.01) { 
   int cycle = cycle + 1; // Add 1 to cycle number
     }
   if (cycle >= 5){
     LCDwrite("Data Collection", "Completed");
     while(1);
     }
+    delay(300);
 }
 
-void LCDwrite(String s, String s2){
+void LCDwrite(String s, String s2){ //Fix problem: 100ms delay makes screen almost unreadable
   lcd.setCursor(0, 0); //Write to LCD
   lcd.print(s);
   lcd.setCursor(0,1);
@@ -161,7 +163,8 @@ void readADS() {
    * multiply that by 0.1875, and divide that by 1000 to get voltage
    * in volts.
    */
-   resultS = intercept + cVoltage*slope; //Fix later so this actually shows microsiemens
+   resultSd = intercept + cVoltage*slope; //Fix later so this actually shows microsiemens
+   resultS = resultSd;
    resultmV = cVoltage;
 }
 
@@ -172,15 +175,19 @@ void SDwrite() {
     while(1);
     }
     else {
+      if (resultSd > 0) {
     file.println(resultS + "," + resultmV + "," + millis()); //writes to SD card
     file.close();
-  }
+  } else {
+    delay(0);
+    }
+    }
 }
 
 void writeResult(){ //Writes result to SD card and LCD Screen
   readADS(); //Reads data from ADC
   SDwrite(); //Write data to SD card
-  LCDwrite((resultS + " V"), (resultmV + " mV")); //Space keeps unnecessary "V" from appearing
+  LCDwrite((resultS + " uS"), (resultmV + " mV")); //Space keeps unnecessary "V" from appearing
 }
 
 void titleAndInitialize(){
