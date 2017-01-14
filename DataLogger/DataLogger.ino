@@ -16,79 +16,65 @@
 
  /*
   * Pin specifications:
-  * SS for LCD: 2
   * SS for SD Card Reader/Writer ("R/W"): 10
   * MOSI Pin: 11
   * MISO Pin: 12
   * Clock Pin: 13
   * SDA and SCL are used for the ADS1115.
-  * Peristaltic Pump (PP) Pin: 5. Note: PWN is required for speed adjustment.
+  * Peristaltic Pump (PP) Pin: 3. Note: PWN is required for speed adjustment.
   */
-
-//The Wire library allows communication with I2C / TWI devices.
-#include <Wire.h> //V1.0
 
 //The ADS1015 library facilitates reading from the ADS1115.
 #include <Adafruit_ADS1015.h> //V1.1
+//Organize ADC variables, set base address
+Adafruit_ADS1115 ads1115; //Creates instance of ads1115
+Adafruit_ADS1115 ads(0x48); //Sets base address
+//Create variables for displaying on LCD and saving to SD Card
+float cVoltage; //16 bit variable reading from ADC's A0
+String resultmV; //String containing reading from ADC in mV
+String resultV; //String containing reading from ADC in V
 
-//The LiquidCrystal library, by Juan Hernandez (juanh0238) facilitates usage of the 
-//LCD screen using a shift register via SPI.
+
+//The LiquidCrystal library facilitates usage of the  LCD screen
 #include <LiquidCrystal.h>
+LiquidCrystal lcd(4, 5, 9, 7, 6, 2); //Initialize LiquidCrystal Library
 
-//The SPI library enables SPI interface bus.
-#include <SPI.h>
 
 //#include <SD.h>
 //Instead, use the SdFat library by greiman (https://github.com/greiman/SdFat)
-#include "SdFat.h"
+#include <SdFat.h>
 SdFat SD; //Added for backwards compatability. This was suggested on the Arduino forum
 //by user Scottrockcafe to user trilbytim (https://forum.arduino.cc/index.php?topic=231495.0).
+//Create file for saving to SD Card
+File resultFile;
+String fileName = "test.txt"; //Change as needed
+#define SD_CS_PIN SS //Defines CS pin as SS for SD card
 
-#define SD_CS_PIN SS //Defines CS pin as SS
 
 //Set pins for MISO/MOSI/SS/PP
-const int lcdSS = 2; //SS for LCD
 const int sdSS = 10; //SS for sd card logger was already defined, but
 //pin 10 (the hardware SS pin) must be set to output or the SdFat library
 //won't work
 const int MOSIpin = 11; //MOSI pin
 const int MISOpin = 12; //MISO pin
 const int clk = 13; //Clock pin
-const int PP = 5; //Peristaltic pump pin
-
-LiquidCrystal lcd(lcdSS); //Set LCD Slave Select to 2 in library file
-Adafruit_ADS1115 ads1115; //Creates instance of ads1115
-Adafruit_ADS1115 ads(0x48); //Sets base address
-
-//Create variables for displaying on LCD and saving to SD Card
-float cVoltage; //16 bit variable reading from ADC's A0
-String resultmV; //String containing reading from ADC in mV
-String resultV; //String containing reading from ADC in V
-
-//Create file for saving to SD Card
-File resultFile;
-String fileName = "test.txt"; //Change as needed
+const int PP = 3; //Peristaltic pump pin
 
 void setup() {
   //Set pin modes
-  pinMode(lcdSS, OUTPUT);
-  pinMode(sdSS, OUTPUT);
   pinMode(MOSIpin, OUTPUT);
   pinMode(MISOpin, OUTPUT);
   pinMode(clk, OUTPUT);
   pinMode(PP, OUTPUT);
-  
+
   lcd.begin(16,2); //Initializes LCD with # of rows and columns
 
-  if (!SD.begin(SD_CS_PIN)) {
-    LCDwrite("Failed to Detect", "SD Card");
-    while(1);
-  }
-  LCDwrite("SD Card", "Initialized");
-
-  //Finish initialization processes
+  //Initialize ADC
   ads1115.begin(); //Initializes ADC
-  LCDclear();
+  
+  titleAndInitialize();
+  lcd.clear();
+  void loop();
 }
 
 void loop() {
@@ -96,17 +82,12 @@ void loop() {
 }
 
 void LCDwrite(String s, String s2){
-  digitalWrite(sdSS, LOW); //Set SD SS to low
-  digitalWrite(lcdSS, HIGH); //Set LCD SS to high
   lcd.setCursor(0, 0); //Write to LCD
   lcd.print(s);
   lcd.setCursor(0,1);
   lcd.print(s2);
 }
 
-void LCDclear(){
-  LCDwrite("","");
-  }
 
 void readADS() {
   cVoltage = ((ads1115.readADC_Differential_0_1())*0.1875);
@@ -129,9 +110,8 @@ void SDwrite() {
   if(!resultFile){
     LCDwrite("Cannot open", fileName);
     delay(1000);
-    LCDclear();
     }
-  digitalWrite(lcdSS, LOW); //Sets LCD SS pin to low
+  lcd.clear();
   resultFile.println(resultmV + ","); //writes to SD card
 }
 
@@ -140,6 +120,32 @@ void writeResult(){ //Writes result to SD card and LCD Screen
   SDwrite(); //Write data to SD card
   LCDwrite((resultV + " V"), (resultmV + " mV ")); //Space keeps unnecessary "V" from appearing
 }
+
+void titleAndInitialize(){
+  LCDwrite("Data Acquisition", "Instrument V2.0");
+  delay(3000);
+  lcd.clear();
+  LCDwrite("By Luke Padgett", "2016-2017, PAHS");
+  delay(3000);
+  lcd.clear();
+  LCDwrite("Detecting SD.  ", "");
+  delay(500);
+  LCDwrite("Detecting SD..", "");
+  delay(500);
+  LCDwrite("Detecting SD...", "");
+  //Begin SD Card module
+  if (!SD.begin(SD_CS_PIN)) {
+    lcd.clear();
+    LCDwrite("Failed to Detect", "SD. Fix issue.");
+    while(1);
+  }
+  if (SD.begin(SD_CS_PIN)) {
+    lcd.clear();
+    LCDwrite("SD Card", "Detected");
+    delay(3000);
+    lcd.clear();
+  }
+  }
 
 
 
