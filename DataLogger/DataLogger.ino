@@ -78,7 +78,6 @@ const int MOSIpin = 11; //MOSI pin
 const int MISOpin = 12; //MISO pin
 const int clk = 13; //Clock pin
 const int PP = 3; //Peristaltic pump pin
-boolean pumpOn = false; //boolean for turning pump on and off
 
 //Time-keeping variable
 //unsigned long time;
@@ -116,8 +115,6 @@ void setup() {
     LCDwrite("Error writing to", fileName);
     while(1);
     }
-    pumpOn = true;
-    digitalWrite(PP, HIGH); //Sets speed of peristaltic pump to a constant value
     delay(100);
 }
 
@@ -131,16 +128,15 @@ void setup() {
  * Are all necessary wires connected?
  */
 void loop() {
+  digitalWrite(PP, HIGH); //Sets speed of peristaltic pump to a constant value
   writeResult();
-  int ms = millis();
-  if (ms / mlSpeed40 <= 1.01) { 
-  int cycle = cycle + 1; // Add 1 to cycle number
-    }
-  if (cycle >= 5){
+  unsigned long ms = millis(); //millis() is an unsigned long
+  if (ms >= mlSpeed40){
     LCDwrite("Data Collection", "Completed");
     while(1);
-    }
+    } else {
     delay(300);
+  }
 }
 
 void LCDwrite(String s, String s2){ //Fix problem: 100ms delay makes screen almost unreadable
