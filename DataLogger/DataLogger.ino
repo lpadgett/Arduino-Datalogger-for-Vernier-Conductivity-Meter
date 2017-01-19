@@ -39,10 +39,15 @@ double cVoltage; //Variable reading from ADC's A0
 String resultmV; //String containing reading from ADC in mV
 String resultS; //String variable containing result in microsiemens.
 double resultSd; //Double variable for deciding if measurement is not error
+<<<<<<< HEAD
 const double intercept = 0; //Intercept for conductivity meter, provided by Vernier*
 const double slope = 0.357142857; //Slope for conductivity meter, provided by Vernier*
 //*THE INTERCEPT AND SLOPE ARE NOT YET CORRECT, STILL WAITING ON A RESPONSE
 //FROM VERNIER SUPPORT. 
+=======
+const double intercept = 2663.862; //Intercept for conductivity meter
+const double slope = 3.062497; //Slope for conductivity meter
+>>>>>>> master
 /*Note: Voltage in mV for 1000uS/cm conductivity is mV.
 //CALIBRATE USING THAT VOLTAGE. Ensure the Vernier conductivity meter's range is
 *set to 0 to 20,000 uS/cm (0 to 10,000 mg/L TDS).
@@ -131,12 +136,21 @@ void loop() {
   digitalWrite(PP, HIGH); //Sets speed of peristaltic pump to a constant value
   writeResult();
   unsigned long ms = millis(); //millis() is an unsigned long
+<<<<<<< HEAD
   if (ms >= mlSpeed40){
     LCDwrite("Data Collection", "Completed");
     while(1);
     } else {
     delay(300);
   }
+=======
+//  if (mlSpeed40 - ms <= 0){
+//    LCDwrite("Data Collection", "Completed");
+//    while(1);
+//    } else {
+    delay(300);
+//  }
+>>>>>>> master
 }
 
 void LCDwrite(String s, String s2){ //Fix problem: 100ms delay makes screen almost unreadable
@@ -159,7 +173,11 @@ void readADS() {
    * multiply that by 0.1875, and divide that by 1000 to get voltage
    * in volts.
    */
+<<<<<<< HEAD
    resultSd = intercept + cVoltage*slope; //Fix later so this actually shows microsiemens
+=======
+   resultSd = (cVoltage-intercept)*slope;
+>>>>>>> master
    resultS = resultSd;
    resultmV = cVoltage;
 }
@@ -183,7 +201,11 @@ void SDwrite() {
 void writeResult(){ //Writes result to SD card and LCD Screen
   readADS(); //Reads data from ADC
   SDwrite(); //Write data to SD card
+<<<<<<< HEAD
   LCDwrite((resultS + " uS"), (resultmV + " mV")); //Space keeps unnecessary "V" from appearing
+=======
+  LCDwrite((resultS + " uS    "), (resultmV + " mV    ")); //Space keeps unnecessary "V" from appearing
+>>>>>>> master
 }
 
 void titleAndInitialize(){
