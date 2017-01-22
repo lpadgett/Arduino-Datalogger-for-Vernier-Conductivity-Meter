@@ -16,7 +16,7 @@ to be recorded in .csv files, depending on the test cycle ID.
 
 #Schematics?
 Yes, there are schematics for this. I included a picture of the schematics for the datalogger
-I designed in this repository. It is entitled "schematics.jpg." Parts used that are not generic
+I designed in this repository. It is entitled "schematics.pdf." Parts used that are not generic
 (generic as in extremely common and general-purpose, e.g. wire, NPN transistors, power diodes, 
 etc) are as follows: 1 ADS1115 ADC, 1 16x2 LCD, 1 SN74HC595N 8-bit shift register, 1 Analog British 
 Telecom connector, 1 REF02 +5v voltage reference chip, 1 OPA177 operational amplifier, and 1
