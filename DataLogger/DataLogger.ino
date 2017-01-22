@@ -39,15 +39,10 @@ double cVoltage; //Variable reading from ADC's A0
 String resultmV; //String containing reading from ADC in mV
 String resultS; //String variable containing result in microsiemens.
 double resultSd; //Double variable for deciding if measurement is not error
-<<<<<<< HEAD
-const double intercept = 0; //Intercept for conductivity meter, provided by Vernier*
-const double slope = 0.357142857; //Slope for conductivity meter, provided by Vernier*
 //*THE INTERCEPT AND SLOPE ARE NOT YET CORRECT, STILL WAITING ON A RESPONSE
 //FROM VERNIER SUPPORT. 
-=======
-const double intercept = 2663.862; //Intercept for conductivity meter
-const double slope = 3.062497; //Slope for conductivity meter
->>>>>>> master
+const double intercept = 2693.697; //Intercept for conductivity meter, 2622+71.697
+const double slope = (1/41.47); //Slope for conductivity meter
 /*Note: Voltage in mV for 1000uS/cm conductivity is mV.
 //CALIBRATE USING THAT VOLTAGE. Ensure the Vernier conductivity meter's range is
 *set to 0 to 20,000 uS/cm (0 to 10,000 mg/L TDS).
@@ -89,12 +84,15 @@ const int PP = 3; //Peristaltic pump pin
 
 //Set values for time it takes to circulate the 100mL 
 //bulk solution 5x through apparatus at pump speeds
-const int mlSpeed40 = 150000;
-const int mlSpeed20 = 300000;
-const int mlSpeed10 = 600000;
+unsigned long mlSpeed40 = 150000;
+unsigned long mlSpeed20 = 300000;
+unsigned long mlSpeed10 = 600000;
 
-//Record how many times water has been circulated through apparatus
-int cycle = 0;
+//Boolean comparison variable for elapsed time method
+boolean expired = false;
+
+//Compensate for the time the setup takes
+unsigned long setupTime;
 
 void setup() {
   //Set pin modes
@@ -121,6 +119,7 @@ void setup() {
     while(1);
     }
     delay(100);
+    setupTime = millis();
 }
 
 /*
@@ -135,22 +134,13 @@ void setup() {
 void loop() {
   digitalWrite(PP, HIGH); //Sets speed of peristaltic pump to a constant value
   writeResult();
-  unsigned long ms = millis(); //millis() is an unsigned long
-<<<<<<< HEAD
-  if (ms >= mlSpeed40){
+  expired = timeExpired(mlSpeed40);
+  if (expired == true){ //Change the mlSpeed to desired timing
     LCDwrite("Data Collection", "Completed");
     while(1);
     } else {
     delay(300);
   }
-=======
-//  if (mlSpeed40 - ms <= 0){
-//    LCDwrite("Data Collection", "Completed");
-//    while(1);
-//    } else {
-    delay(300);
-//  }
->>>>>>> master
 }
 
 void LCDwrite(String s, String s2){ //Fix problem: 100ms delay makes screen almost unreadable
@@ -173,11 +163,8 @@ void readADS() {
    * multiply that by 0.1875, and divide that by 1000 to get voltage
    * in volts.
    */
-<<<<<<< HEAD
-   resultSd = intercept + cVoltage*slope; //Fix later so this actually shows microsiemens
-=======
-   resultSd = (cVoltage-intercept)*slope;
->>>>>>> master
+
+   resultSd = (cVoltage-intercept)*slope*1000; //Fix later so this actually shows microsiemens
    resultS = resultSd;
    resultmV = cVoltage;
 }
@@ -201,12 +188,17 @@ void SDwrite() {
 void writeResult(){ //Writes result to SD card and LCD Screen
   readADS(); //Reads data from ADC
   SDwrite(); //Write data to SD card
-<<<<<<< HEAD
-  LCDwrite((resultS + " uS"), (resultmV + " mV")); //Space keeps unnecessary "V" from appearing
-=======
   LCDwrite((resultS + " uS    "), (resultmV + " mV    ")); //Space keeps unnecessary "V" from appearing
->>>>>>> master
 }
+
+boolean timeExpired(unsigned long value){
+  unsigned long now = millis();
+  if ((now - setupTime) - value <= 0){
+    return true;
+    } else {
+      return false;
+      }
+  }
 
 void titleAndInitialize(){
   LCDwrite("Data Acquisition", "Instrument V2.0");
