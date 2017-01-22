@@ -41,8 +41,8 @@ String resultS; //String variable containing result in microsiemens.
 double resultSd; //Double variable for deciding if measurement is not error
 //*THE INTERCEPT AND SLOPE ARE NOT YET CORRECT, STILL WAITING ON A RESPONSE
 //FROM VERNIER SUPPORT. 
-const double intercept = 2693.697; //Intercept for conductivity meter, 2622+71.697
-const double slope = (1/41.47); //Slope for conductivity meter
+const double intercept = -59497.7112; //Intercept for conductivity meter
+const double slope = 22.4938985; //Slope for conductivity meter
 /*Note: Voltage in mV for 1000uS/cm conductivity is mV.
 //CALIBRATE USING THAT VOLTAGE. Ensure the Vernier conductivity meter's range is
 *set to 0 to 20,000 uS/cm (0 to 10,000 mg/L TDS).
@@ -164,7 +164,10 @@ void readADS() {
    * in volts.
    */
 
-   resultSd = (cVoltage-intercept)*slope*1000; //Fix later so this actually shows microsiemens
+   resultSd = intercept + (slope * cVoltage); //Fix later so this actually shows microsiemens
+   if (resultSd <= 0) {
+    resultSd = 0;
+    }
    resultS = resultSd;
    resultmV = cVoltage;
 }
