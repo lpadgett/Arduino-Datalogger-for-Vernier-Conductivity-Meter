@@ -23,6 +23,13 @@ Telecom connector, 1 REF02 +5v voltage reference chip, 1 OPA177 operational ampl
 "Deek-Robot SHIELD MODEL Data logging board Products ID:8122" data logging module (which logged data
 to a micro-SD card). 
 
+NOTE: As of 9/2017, this design is outdated. The changes made include: adding an RF choke on the 
+positive wire for the motor, adding 2 more electrolytic capacitors on the lines of the motor, 
+and adding an electrolytic capacitor on the power lines of every "module" and IC. These changes
+were made to resolve the issue of noise garbling what was to be displayed on the LCD display once
+the motor had been running for too long.
+
+
 #LICENSING
 The only licenses that have to do with this project in terms of code are the licenses of the 
 libraries that I did not write, such as any Adafruit libraries. I included the proper licensing
